@@ -1,0 +1,12 @@
+.metadata/*
+*.class
+bin/*
+gen/*
+.settings/*
+.classpath
+.project
+libs/*
+lint.xml
+javadoc.xml
+wyfy.pdf
+doc/*
