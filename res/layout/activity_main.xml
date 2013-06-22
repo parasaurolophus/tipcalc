@@ -62,7 +62,8 @@
         android:id="@+id/tableRow3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/row_margin" >
+        android:layout_margin="@dimen/row_margin"
+        android:focusable="false" >
 
         <TextView
             android:id="@+id/textView3"
@@ -71,13 +72,13 @@
             android:text="@string/tip_label"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
-        <EditText
+        <TextView
             android:id="@+id/tip_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="2"
             android:ems="10"
-            android:inputType="none|numberDecimal" />
+            android:textIsSelectable="true" />
 
     </TableRow>
 
@@ -94,13 +95,13 @@
             android:text="@string/pay_label"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
-        <EditText
+        <TextView
             android:id="@+id/pay_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="2"
             android:ems="10"
-            android:inputType="none|numberDecimal" />
+            android:textIsSelectable="true" />
 
     </TableRow>
 

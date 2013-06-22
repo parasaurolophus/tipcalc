@@ -1,11 +1,19 @@
 package us.rader.tipcalc;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
 import android.app.Activity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Menu;
 import android.widget.EditText;
+import android.widget.TextView;
 
 /**
  * "Classic" approach to Android UI using an {@link Activity} with no fragments
@@ -42,7 +50,7 @@ public class MainActivity extends Activity {
 
             }
 
-            float percent = Float.parseFloat(s) / 100.0f;
+            float newPercent = Float.parseFloat(s) / 100.0f;
             s = billText.getText().toString();
 
             if (EMPTY.equals(s)) {
@@ -54,11 +62,17 @@ public class MainActivity extends Activity {
             }
 
             float bill = Float.parseFloat(s.toString());
-            float tip = bill * percent;
+            float tip = bill * newPercent;
             float pay = bill + tip;
             tipText.setText(getString(R.string.monetary_format, tip));
             payText.setText(getString(R.string.monetary_format, pay));
 
+            if (percent != newPercent) {
+
+                percent = newPercent;
+                storePercent(percent);
+
+            }
         }
 
         /**
@@ -115,9 +129,19 @@ public class MainActivity extends Activity {
     }
 
     /**
+     * Default value or {@link #percent} when no value has yet been stored
+     */
+    private static final float  DEFAULT_PERCENT   = 0.2f;
+
+    /**
      * Empty {@link String}
      */
-    private static final String EMPTY = ""; //$NON-NLS-1$
+    private static final String EMPTY             = "";       //$NON-NLS-1$
+
+    /**
+     * Name of the in which to store {@link #percent}
+     */
+    private static final String STORAGE_FILE_NAME = "percent"; //$NON-NLS-1$
 
     /**
      * {@link EditText} for the bill amount
@@ -127,7 +151,12 @@ public class MainActivity extends Activity {
     /**
      * {@link EditText} for the amount to pay, including tip
      */
-    private EditText            payText;
+    private TextView            payText;
+
+    /**
+     * Previously stored value for tip percentage
+     */
+    private float               percent;
 
     /**
      * {@link EditText} for the tip percent
@@ -137,7 +166,7 @@ public class MainActivity extends Activity {
     /**
      * {@link EditText} for the amount of the tip
      */
-    private EditText            tipText;
+    private TextView            tipText;
 
     /**
      * Inflate the options {@link Menu}
@@ -172,13 +201,89 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         billText = (EditText) findViewById(R.id.bill_text);
-        payText = (EditText) findViewById(R.id.pay_text);
+        payText = (TextView) findViewById(R.id.pay_text);
         percentText = (EditText) findViewById(R.id.percent_text);
-        tipText = (EditText) findViewById(R.id.tip_text);
+        tipText = (TextView) findViewById(R.id.tip_text);
         TipTextWatcher watcher = new TipTextWatcher();
         billText.addTextChangedListener(watcher);
         percentText.addTextChangedListener(watcher);
 
+    }
+
+    /**
+     * Display this instance
+     * 
+     * @see android.app.Activity#onResume()
+     */
+    @Override
+    protected void onResume() {
+
+        super.onResume();
+        percent = restorePercent();
+        int n = (int) (percent * 100.0f);
+        percentText.setText(Integer.toString(n));
+
+    }
+
+    /**
+     * Get the preciously stored tip percentage
+     * 
+     * @return restored tip percentage or {@link #DEFAULT_PERCENT}
+     */
+    private float restorePercent() {
+
+        try {
+
+            FileInputStream inputStream = openFileInput(STORAGE_FILE_NAME);
+            DataInputStream dataStream = new DataInputStream(inputStream);
+
+            try {
+
+                return dataStream.readFloat();
+
+            } finally {
+
+                dataStream.close();
+
+            }
+
+        } catch (Exception e) {
+
+            Log.e(getClass().getName(), "restorePercent", e); //$NON-NLS-1$
+            return DEFAULT_PERCENT;
+
+        }
+    }
+
+    /**
+     * Store the given value
+     * 
+     * @param percent
+     *            the value to store
+     */
+    private void storePercent(float percent) {
+
+        try {
+
+            FileOutputStream outputStream = openFileOutput(STORAGE_FILE_NAME,
+                    MODE_PRIVATE);
+            DataOutputStream dataStream = new DataOutputStream(outputStream);
+
+            try {
+
+                dataStream.writeFloat(percent);
+
+            } finally {
+
+                dataStream.close();
+
+            }
+
+        } catch (IOException e) {
+
+            Log.e(getClass().getName(), "storePercent", e); //$NON-NLS-1$
+
+        }
     }
 
 }
