@@ -18,6 +18,12 @@ import android.widget.TextView;
 /**
  * "Classic" approach to Android UI using an {@link Activity} with no fragments
  * 
+ * This kind of app is one notch above "Hello, world". It exists as part of a
+ * collection of open-source projects for instructional purposes, not because
+ * the world actually needs yet another tip calculator. That said, it does serve
+ * a marginally useful purpose and is totally free, with no unnecessary
+ * permissions, no ads, no notification bar spam etc.
+ * 
  * @author Kirk
  */
 public class MainActivity extends Activity {
